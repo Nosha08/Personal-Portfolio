@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -13,7 +13,7 @@
 <body>
 
   <!-- NAV -->
-  <nav>
+  <nav id="main-nav">
     <a href="index.html" class="nav-logo">NR</a>
     <ul class="nav-links">
       <li><a href="index.html#about">About</a></li>
@@ -40,7 +40,7 @@
   <main>
 
     <div class="page-header">
-      <h1>Blog</h1>
+      <h1 data-animate>Blog</h1>
       <p>
         Reflections on building AI systems, leading at scale, and four years of growth
         at Staten Island Technical High School.
@@ -51,7 +51,7 @@
       <div class="blog-list">
 
         <!-- Post 3 — newest first -->
-        <a href="blog/capstone.html" class="blog-item">
+        <a href="blog/capstone.html" class="blog-item" data-animate>
           <div class="blog-date">May 2026</div>
           <div class="blog-item-content">
             <h2>It Is 4,000 B.C.</h2>
@@ -59,12 +59,12 @@
               A retrospective in the language I&rsquo;ve always thought in &mdash; Civilization,
               civilizations, and the turn I&rsquo;m about to take.
             </p>
-            <span class="read-more">Read post &rarr;</span>
           </div>
+          <span class="read-more">Read post &rarr;</span>
         </a>
 
         <!-- Post 2 -->
-        <a href="blog/teamwork.html" class="blog-item">
+        <a href="blog/teamwork.html" class="blog-item" data-animate data-delay="1">
           <div class="blog-date">Apr 2025</div>
           <div class="blog-item-content">
             <h2>Building SammyGPT: Language Detection, RAG, and Serving Immigrant Families</h2>
@@ -72,12 +72,12 @@
               How SammyGPT works under the hood &mdash; language detection, vector retrieval,
               and serving immigrant families across six Staten Island schools.
             </p>
-            <span class="read-more">Read post &rarr;</span>
           </div>
+          <span class="read-more">Read post &rarr;</span>
         </a>
 
         <!-- Post 1 -->
-        <a href="blog/growth-milestone.html" class="blog-item">
+        <a href="blog/growth-milestone.html" class="blog-item" data-animate data-delay="2">
           <div class="blog-date">Mar 2025</div>
           <div class="blog-item-content">
             <h2>Three Lessons I Learned from the Staten Island Chamber of Commerce</h2>
@@ -86,8 +86,8 @@
               salesman who ran his entire business on data science &mdash; three lessons from
               YEA and the Chamber.
             </p>
-            <span class="read-more">Read post &rarr;</span>
           </div>
+          <span class="read-more">Read post &rarr;</span>
         </a>
 
       </div>
@@ -112,10 +112,3 @@
   <script src="js/main.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-

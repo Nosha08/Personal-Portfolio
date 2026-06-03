@@ -1,23 +1,146 @@
 (function () {
-  // ── Active nav link ──────────────────────────────────────────────
-  const path = window.location.pathname;
-  const filename = path.split('/').pop() || 'index.html';
+  'use strict';
 
-  document.querySelectorAll('.nav-links a, .mobile-nav a').forEach(link => {
-    const href = link.getAttribute('href');
-    if (!href) return;
-    const linkFile = href.split('/').pop().split('#')[0] || 'index.html';
+  // ── 1. CUSTOM CURSOR ──────────────────────────────────────────────
+  const follower = document.getElementById('cursorFollower');
+  const ring = document.getElementById('cursorRing');
 
-    if (linkFile === filename) {
-      link.classList.add('active');
+  if (follower && window.matchMedia('(hover: hover)').matches) {
+    const dot = follower.querySelector('.cursor-dot');
+    let mouseX = 0, mouseY = 0;
+    let ringX = 0, ringY = 0;
+
+    // Move dot instantly, independent of ring
+    document.addEventListener('mousemove', function (e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.transform = 'translate(' + mouseX + 'px, ' + mouseY + 'px) translate(-50%, -50%)';
+    }, { passive: true });
+
+    // Ring lerps behind — container stays at 0,0
+    function animateRing() {
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      ring.style.transform = 'translate(' + ringX + 'px, ' + ringY + 'px) translate(-50%, -50%)';
+      requestAnimationFrame(animateRing);
     }
-    // Home page: treat empty or index.html as the same
-    if ((filename === '' || filename === 'index.html') && (linkFile === 'index.html' || href === '/')) {
-      link.classList.add('active');
-    }
-  });
+    animateRing();
 
-  // ── Hamburger / mobile nav ───────────────────────────────────────
+    // Expand ring on interactive elements
+    const interactives = 'a, button, [role="button"], .bento-card, .project-card, .skill-tag';
+
+    document.addEventListener('mouseover', function (e) {
+      if (e.target.closest(interactives)) {
+        ring.classList.add('expanded');
+      }
+    });
+
+    document.addEventListener('mouseout', function (e) {
+      if (e.target.closest(interactives)) {
+        ring.classList.remove('expanded');
+      }
+    });
+
+    // Hide cursor when leaving window
+    document.addEventListener('mouseleave', function () {
+      follower.style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', function () {
+      follower.style.opacity = '1';
+    });
+  }
+
+  // ── 2. NAV SCROLL ─────────────────────────────────────────────────
+  const nav = document.getElementById('main-nav') || document.querySelector('nav');
+  if (nav) {
+    function handleNavScroll() {
+      if (window.scrollY > 20) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    }
+    window.addEventListener('scroll', handleNavScroll, { passive: true });
+    handleNavScroll(); // run once on load
+  }
+
+  // ── 3. TYPEWRITER ─────────────────────────────────────────────────
+  const typewriterEl = document.getElementById('typewriter');
+  if (typewriterEl) {
+    const words = [
+      'Developer.',
+      'Entrepreneur.',
+      'Civic Leader.',
+      'AI Builder.',
+      "Wharton '30."
+    ];
+    let wordIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let isPaused = false;
+
+    function tick() {
+      const currentWord = words[wordIndex];
+
+      if (isPaused) {
+        isPaused = false;
+        isDeleting = true;
+        setTimeout(tick, 80);
+        return;
+      }
+
+      if (!isDeleting) {
+        // Typing forward
+        charIndex++;
+        typewriterEl.textContent = currentWord.slice(0, charIndex);
+        if (charIndex === currentWord.length) {
+          // Pause at end of word
+          isPaused = true;
+          setTimeout(tick, 1600);
+        } else {
+          setTimeout(tick, 80 + Math.random() * 40);
+        }
+      } else {
+        // Deleting
+        charIndex--;
+        typewriterEl.textContent = currentWord.slice(0, charIndex);
+        if (charIndex === 0) {
+          isDeleting = false;
+          wordIndex = (wordIndex + 1) % words.length;
+          setTimeout(tick, 320);
+        } else {
+          setTimeout(tick, 45);
+        }
+      }
+    }
+
+    // Start after a short delay
+    setTimeout(tick, 800);
+  }
+
+  // ── 4. SCROLL REVEAL ──────────────────────────────────────────────
+  const animatedEls = document.querySelectorAll('[data-animate]');
+  if (animatedEls.length > 0 && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animated');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    animatedEls.forEach(function (el) {
+      observer.observe(el);
+    });
+  } else {
+    // Fallback: show all immediately
+    animatedEls.forEach(function (el) {
+      el.classList.add('animated');
+    });
+  }
+
+  // ── 5. HAMBURGER MENU ─────────────────────────────────────────────
   const hamburger = document.getElementById('hamburger');
   const mobileNav = document.getElementById('mobile-nav');
 
@@ -28,16 +151,14 @@
       hamburger.setAttribute('aria-expanded', String(isOpen));
     });
 
-    // Close when a link is clicked
-    mobileNav.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
+    mobileNav.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
         mobileNav.classList.remove('open');
         hamburger.classList.remove('open');
         hamburger.setAttribute('aria-expanded', 'false');
       });
     });
 
-    // Close on outside tap
     document.addEventListener('click', function (e) {
       if (!hamburger.contains(e.target) && !mobileNav.contains(e.target)) {
         mobileNav.classList.remove('open');
@@ -47,46 +168,40 @@
     });
   }
 
-  // ── Scroll: shrink nav shadow ────────────────────────────────────
-  const nav = document.querySelector('nav');
-  if (nav) {
-    window.addEventListener('scroll', function () {
-      nav.style.boxShadow = window.scrollY > 10
-        ? '0 4px 24px rgba(2,12,27,0.5)'
-        : 'none';
-    }, { passive: true });
-  }
+  // ── 6. CARD TILT ──────────────────────────────────────────────────
+  const tiltCards = document.querySelectorAll('.project-card, .bento-card');
 
-  // ── Hero animation: typing intro → staggered fade-in ─────────────
-  const introEl = document.querySelector('.hero-intro');
-  if (introEl) {
-    const fullText = introEl.textContent.trim();
-    introEl.textContent = '';
+  tiltCards.forEach(function (card) {
+    card.addEventListener('mousemove', function (e) {
+      const rect = card.getBoundingClientRect();
+      const dx = (e.clientX - (rect.left + rect.width  / 2)) / (rect.width  / 2);
+      const dy = (e.clientY - (rect.top  + rect.height / 2)) / (rect.height / 2);
+      const rotX = (-dy * 5).toFixed(2);
+      const rotY = ( dx * 5).toFixed(2);
+      card.style.transition = 'transform 0.08s ease, border-color 0.3s';
+      card.style.transform = 'perspective(900px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) translateZ(6px)';
+    });
 
-    const cursor = document.createElement('span');
-    cursor.className = 'cursor';
-    introEl.appendChild(cursor);
+    card.addEventListener('mouseleave', function () {
+      card.style.transition = 'transform 0.5s ease, border-color 0.3s';
+      card.style.transform = '';
+    });
+  });
 
-    let i = 0;
-    function typeNext() {
-      if (i < fullText.length) {
-        introEl.insertBefore(document.createTextNode(fullText[i]), cursor);
-        i++;
-        setTimeout(typeNext, 55);
-      } else {
-        // Blink cursor briefly, then remove and cascade the rest in
-        setTimeout(() => {
-          cursor.remove();
-          const targets = ['.hero-name', '.hero-tagline', '.hero-badges', '.hero-desc', '.hero-ctas', '.hero-photo-wrap'];
-          targets.forEach((sel, idx) => {
-            const el = document.querySelector(sel);
-            if (!el) return;
-            setTimeout(() => el.classList.add('anim-in'), idx * 140);
-          });
-        }, 500);
-      }
+  // ── ACTIVE NAV LINK ───────────────────────────────────────────────
+  const path = window.location.pathname;
+  const filename = path.split('/').pop() || 'index.html';
+
+  document.querySelectorAll('.nav-links a, .mobile-nav a').forEach(function (link) {
+    const href = link.getAttribute('href');
+    if (!href) return;
+    const linkFile = href.split('/').pop().split('#')[0] || 'index.html';
+    if (linkFile === filename) {
+      link.classList.add('active');
     }
+    if ((filename === '' || filename === 'index.html') && (linkFile === 'index.html' || href === '/')) {
+      link.classList.add('active');
+    }
+  });
 
-    setTimeout(typeNext, 400);
-  }
 })();

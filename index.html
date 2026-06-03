@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -12,8 +12,14 @@
 </head>
 <body>
 
+  <!-- CUSTOM CURSOR -->
+  <div class="cursor-follower" id="cursorFollower">
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+  </div>
+
   <!-- NAV -->
-  <nav>
+  <nav id="main-nav">
     <a href="index.html" class="nav-logo">NR</a>
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
@@ -41,14 +47,19 @@
 
     <!-- HERO -->
     <section id="hero">
-      <div class="hero-orb hero-orb-1"></div>
-      <div class="hero-orb hero-orb-2"></div>
-      <div class="hero-orb hero-orb-3"></div>
-      <div class="hero-content">
-        <div class="hero-text">
-          <p class="hero-intro">Hi, my name is</p>
-          <h1 class="hero-name">Noah Rozin.</h1>
-          <h2 class="hero-tagline">I build where technology meets impact.</h2>
+      <div class="hero-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+      </div>
+      <div class="hero-inner">
+        <div class="hero-text" data-animate>
+          <div class="hero-eyebrow">
+            <span class="status-dot"></span>
+            <span>Heading to Wharton &middot; Fall 2026</span>
+          </div>
+          <h1 class="hero-name">Noah <span class="accent-text">Rozin.</span></h1>
+          <h2 class="hero-roles"><span class="typewriter-text" id="typewriter"></span><span class="typewriter-cursor">|</span></h2>
           <div class="hero-badges">
             <span class="hero-badge">UPenn Wharton &apos;30</span>
             <span class="hero-badge">SITHS &apos;26</span>
@@ -64,10 +75,18 @@
             <a href="projects.html" class="btn-primary">View My Projects</a>
             <a href="blog.html" class="btn-secondary">Read My Blog</a>
           </div>
+          <div class="hero-socials">
+            <a href="https://github.com/Nosha08" target="_blank" rel="noopener" class="hero-social-link">GitHub</a>
+            <a href="https://www.linkedin.com/in/noah-rozin-4837ab23a/" target="_blank" rel="noopener" class="hero-social-link">LinkedIn</a>
+          </div>
         </div>
-        <div class="hero-photo-wrap">
-          <div class="hero-photo-frame">
-            <img src="public/images/headshot.jpg" alt="Noah Rozin" class="hero-photo">
+        <div class="hero-photo-wrap" data-animate data-delay="2">
+          <div class="hero-photo-container">
+            <div class="hero-photo-glow"></div>
+            <div class="hero-photo-ring"></div>
+            <div class="hero-photo-frame">
+              <img src="public/images/headshot.jpg" alt="Noah Rozin" class="hero-photo">
+            </div>
           </div>
         </div>
       </div>
@@ -76,9 +95,9 @@
     <!-- ABOUT -->
     <section id="about">
       <div class="section-inner">
-        <h2 class="section-heading" data-num="01.">About Me</h2>
+        <h2 class="section-heading" data-num="01." data-animate>About Me</h2>
         <div class="about-grid">
-          <div class="about-text">
+          <div class="about-text" data-animate>
             <p>
               I&rsquo;m Noah &mdash; a recent graduate of
               <a href="https://www.siths.org/" target="_blank" rel="noopener">Staten Island Technical High School</a>
@@ -106,7 +125,7 @@
               and social impact &mdash; continuing the work I&rsquo;ve started here, but at scale.
             </p>
           </div>
-          <div class="about-photo-wrap">
+          <div class="about-photo-wrap" data-animate data-delay="2">
             <img src="public/images/ace-of-ages.png" alt="Ace of Ages — YEA! Nationals 3rd Place" class="about-photo">
           </div>
         </div>
@@ -132,9 +151,9 @@
     <!-- SKILLS -->
     <section id="skills">
       <div class="section-inner">
-        <h2 class="section-heading" data-num="02.">Skills</h2>
+        <h2 class="section-heading" data-num="02." data-animate>Skills</h2>
         <div class="skills-grid">
-          <div class="skill-group">
+          <div class="skill-group" data-animate>
             <h3>Languages</h3>
             <div class="skill-tags">
               <span class="skill-tag">JavaScript</span>
@@ -144,7 +163,7 @@
               <span class="skill-tag">SQL</span>
             </div>
           </div>
-          <div class="skill-group">
+          <div class="skill-group" data-animate data-delay="1">
             <h3>Frameworks</h3>
             <div class="skill-tags">
               <span class="skill-tag">Vue.js</span>
@@ -153,7 +172,7 @@
               <span class="skill-tag">Node.js</span>
             </div>
           </div>
-          <div class="skill-group">
+          <div class="skill-group" data-animate data-delay="2">
             <h3>AI / ML</h3>
             <div class="skill-tags">
               <span class="skill-tag">RAG Systems</span>
@@ -163,7 +182,7 @@
               <span class="skill-tag">Multimodal AI</span>
             </div>
           </div>
-          <div class="skill-group">
+          <div class="skill-group" data-animate data-delay="3">
             <h3>Tools</h3>
             <div class="skill-tags">
               <span class="skill-tag">Git</span>
@@ -172,7 +191,7 @@
               <span class="skill-tag">Linux</span>
             </div>
           </div>
-          <div class="skill-group">
+          <div class="skill-group" data-animate data-delay="4">
             <h3>Soft Skills</h3>
             <div class="skill-tags">
               <span class="skill-tag">Public Speaking</span>
@@ -188,25 +207,25 @@
     <!-- AWARDS -->
     <section id="awards">
       <div class="section-inner">
-        <h2 class="section-heading" data-num="03.">Awards &amp; Honors</h2>
+        <h2 class="section-heading" data-num="03." data-animate>Awards &amp; Honors</h2>
         <div class="awards-grid">
-          <div class="award-card">
+          <div class="award-card" data-animate>
             <div class="award-date">Mar 2025</div>
             <h3>Distinguished New York District Lieutenant Governor &mdash; Key Club International</h3>
           </div>
-          <div class="award-card">
+          <div class="award-card" data-animate data-delay="1">
             <div class="award-date">Feb 2025</div>
             <h3>Stevens Institute of Technology &mdash; National AI Entrepreneurship Competition, 3rd Place</h3>
           </div>
-          <div class="award-card">
+          <div class="award-card" data-animate data-delay="2">
             <div class="award-date">Apr 2024</div>
             <h3>American Debate League &mdash; Varsity State Champion, 1st Place Individual &amp; Team</h3>
           </div>
-          <div class="award-card">
+          <div class="award-card" data-animate data-delay="3">
             <div class="award-date">Jan 2024</div>
             <h3>Wharton International Stock Competition &mdash; Top 8% out of 4,000+ competitors</h3>
           </div>
-          <div class="award-card">
+          <div class="award-card" data-animate data-delay="4">
             <div class="award-date">Jun 2023</div>
             <h3>Young Entrepreneurs Academy (YEA!) Nationals &mdash; 3rd Place</h3>
           </div>
@@ -233,10 +252,3 @@
   <script src="js/main.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
