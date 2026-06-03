@@ -1,0 +1,281 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects — Noah Rozin</title>
+  <meta name="description" content="Projects and experiences by Noah Rozin — SammyGPT, Ace of Ages, Chamber of Commerce.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-logo">NR</a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#skills">Skills</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li class="cta-link"><a href="https://github.com/Nosha08" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="index.html#about">About</a>
+    <a href="index.html#skills">Skills</a>
+    <a href="projects.html">Projects</a>
+    <a href="blog.html">Blog</a>
+    <a href="https://github.com/Nosha08" target="_blank" rel="noopener noreferrer">GitHub</a>
+  </div>
+
+  <main>
+
+    <div class="page-header">
+      <h1>Projects &amp; Experiences</h1>
+      <p>
+        A selection of technical projects, entrepreneurial ventures, and professional work
+        spanning AI development, business, and community impact.
+      </p>
+    </div>
+
+    <div class="projects-container">
+
+      <!-- ── PROJECT 1: SammyGPT ────────────────────────────────── -->
+      <article class="project-card">
+        <div class="project-header">
+          <div class="project-title-row">
+            <h2>SammyGPT</h2>
+            <span class="project-status">Active</span>
+          </div>
+        </div>
+        <div class="project-tags">
+          <span class="project-tag">Python</span>
+          <span class="project-tag">TypeScript</span>
+          <span class="project-tag">RAG</span>
+          <span class="project-tag">NLP</span>
+          <span class="project-tag">Django</span>
+          <span class="project-tag">LLM Integration</span>
+          <span class="project-tag">June 2024 – Present</span>
+        </div>
+
+        <div class="project-body">
+          <div class="project-section">
+            <h3>Problem &amp; Purpose</h3>
+            <p>
+              Thousands of immigrant families on Staten Island can't easily communicate with their
+              children's schools because of language barriers. Enrollment forms, attendance policies,
+              IEPs, and event notices are all written in English — leaving non-English-speaking parents
+              locked out of crucial information about their children's education.
+            </p>
+            <p>
+              SammyGPT was built to dissolve that barrier. It's a retrieval-augmented, multimodal
+              generative AI chatbot deployed across six Staten Island schools, designed to give
+              parents accurate, school-specific answers in their native language — on demand,
+              24 hours a day.
+            </p>
+          </div>
+          <div class="project-section">
+            <h3>Technical Approach</h3>
+            <ul>
+              <li>
+                <strong>RAG architecture:</strong> Each school's policy documents and handbooks are
+                embedded into a scoped vector store using semantic chunking. Queries retrieve the
+                most relevant passages before generation, preventing hallucination on
+                school-specific facts.
+              </li>
+              <li>
+                <strong>Multimodal input:</strong> Parents can submit image-based documents
+                (photos of forms, screenshots of notices) for OCR extraction and translation,
+                handled through a Python image processing pipeline.
+              </li>
+              <li>
+                <strong>Stack:</strong> Python backend (Django), TypeScript frontend, LangChain
+                for orchestration, ChromaDB for vector storage, and a multilingual translation
+                layer for output rendering.
+              </li>
+              <li>
+                <strong>Deployment:</strong> Presented borough-wide to school administrators;
+                expanded from one pilot school to six in 2024–2025.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="project-links">
+          <a href="https://github.com/SammyGPT/SammyGPT-Frontend" target="_blank" rel="noopener noreferrer" class="project-link">GitHub Repo</a>
+        </div>
+
+      </article>
+
+      <!-- ── PROJECT 2: ACE OF AGES ─────────────────────────────── -->
+      <article class="project-card">
+        <div class="project-header">
+          <div class="project-title-row">
+            <h2>Ace of Ages</h2>
+            <span class="project-status">Active</span>
+          </div>
+        </div>
+        <div class="project-tags">
+          <span class="project-tag">Entrepreneurship</span>
+          <span class="project-tag">Product Design</span>
+          <span class="project-tag">Market Research</span>
+          <span class="project-tag">Kickstarter</span>
+          <span class="project-tag">2022 – Present</span>
+        </div>
+
+        <div class="project-body">
+          <div class="project-section">
+            <h3>Problem &amp; Purpose</h3>
+            <p>
+              History education suffers from an engagement problem. Textbooks present events as
+              settled facts — dates, names, outcomes — with little room for the strategic thinking
+              and human agency that actually drove them. Students memorize; they don't reason.
+            </p>
+            <p>
+              Ace of Ages is a history-action board game designed to change that. Players
+              command real historical factions — Roman legions, Mongol cavalry, Renaissance
+              city-states — making strategic decisions that reflect the actual constraints and
+              opportunities those civilizations faced. The game was built for ages 14+ and
+              reviewed in collaboration with the National Council for Social Studies (NCSS).
+            </p>
+          </div>
+          <div class="project-section">
+            <h3>Technical Approach</h3>
+            <ul>
+              <li>
+                <strong>Product development:</strong> Designed the full game system from scratch —
+                mechanics, faction balance, card economy, and rulebook — iterating through
+                playtesting with 30+ student testers over two academic years.
+              </li>
+              <li>
+                <strong>Market research:</strong> Conducted competitive analysis of the
+                educational board game market (Ticket to Ride, Pandemic Legacy, Codenames)
+                to position Ace of Ages at the intersection of strategy gaming and
+                curriculum alignment.
+              </li>
+              <li>
+                <strong>Fundraising &amp; launch:</strong> Designed and launched a Kickstarter
+                campaign including reward tiers, stretch goals, and promotional copy.
+                Collaborated with freelance artists for card and box illustration.
+              </li>
+              <li>
+                <strong>Recognition:</strong> Won 3rd Place at YEA! Nationals (June 2023);
+                placed 3rd at the Stevens Institute AI Entrepreneurship Competition (Feb 2025).
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="project-links">
+          <a href="https://www.silive.com/education/2023/06/remarkable-creativity-staten-island-students-compete-in-shark-tank-style-business-pitch.html" target="_blank" rel="noopener noreferrer" class="project-link">Press Coverage</a>
+        </div>
+
+        <div class="project-reflection">
+          <h3>Reflection</h3>
+          <p>
+            The biggest lesson from Ace of Ages is that product-market fit is validated by
+            strangers, not friends. Early playtesting with classmates gave me falsely positive
+            signal because people were polite. When I ran structured blind playtests with
+            students who had no prior relationship with me, I got much more honest feedback —
+            including that one of my core mechanics was confusing to new players. I reworked
+            it. If I were starting over, I'd get to strangers faster. I'd also think earlier
+            about manufacturing cost — the unit economics of a physical board game are
+            unforgiving, and we discovered that late.
+          </p>
+        </div>
+      </article>
+
+      <!-- ── PROJECT 3: CHAMBER OF COMMERCE ────────────────────── -->
+      <article class="project-card">
+        <div class="project-header">
+          <div class="project-title-row">
+            <h2>Staten Island Chamber of Commerce</h2>
+            <span class="project-status">Active</span>
+          </div>
+        </div>
+        <div class="project-tags">
+          <span class="project-tag">CRM Systems</span>
+          <span class="project-tag">Policy Research</span>
+          <span class="project-tag">Business Analytics</span>
+          <span class="project-tag">Technical Writing</span>
+          <span class="project-tag">June 2024 – Present</span>
+        </div>
+
+        <div class="project-body">
+          <div class="project-section">
+            <h3>Problem &amp; Purpose</h3>
+            <p>
+              Staten Island's 12,000+ small businesses face persistent economic challenges —
+              rising operating costs, congestion pricing impacts, and limited access to
+              organized advocacy resources. The Chamber of Commerce exists to represent their
+              interests, but doing so effectively requires precise data, compelling documentation,
+              and active relationship management.
+            </p>
+            <p>
+              As a Business Retention Specialist, my work directly supports the Chamber's
+              mission: keep businesses on Staten Island, help them access resources, and
+              advocate for policy conditions that support their survival.
+            </p>
+          </div>
+          <div class="project-section">
+            <h3>Technical Approach</h3>
+            <ul>
+              <li>
+                <strong>Accreditation documentation:</strong> Authored and structured
+                comprehensive organizational documents for submission to the U.S. Chamber of
+                Commerce as part of an effort to earn the first-ever five-star accreditation
+                for a New York City chamber. This required synthesizing operational data,
+                governance records, and program outcomes into formal frameworks.
+              </li>
+              <li>
+                <strong>CRM management:</strong> Managed marketing outreach pipelines using
+                the Chamber's CRM platform — segmenting business contacts by industry, size,
+                and engagement history to improve campaign targeting and response rates.
+              </li>
+              <li>
+                <strong>Advocacy &amp; research:</strong> Contributed to the Small Business
+                Resource Network (SBRN) business visit program and produced research
+                materials for congestion pricing advocacy, analyzing economic impact data
+                and drafting public comment submissions.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="project-links">
+          <a href="https://www.sichamber.com" target="_blank" rel="noopener" class="project-link">Chamber Website</a>
+        </div>
+
+      </article>
+
+    </div><!-- /projects-container -->
+  </main>
+
+  <footer>
+    <p>
+      Designed &amp; built by Noah Rozin &nbsp;&middot;&nbsp;
+      <a href="mailto:rozinnoah27@gmail.com">rozinnoah27@gmail.com</a>
+    </p>
+    <div class="footer-links">
+      <a href="https://github.com/Nosha08" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/SammyGPT/SammyGPT-Frontend" target="_blank" rel="noopener">Sammy</a>
+      <a href="https://linkedin.com/in/noah-rozin-4837ab23a" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="index.html">Home</a>
+      <a href="blog.html">Blog</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
+
+
+
+

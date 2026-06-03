@@ -1,0 +1,250 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building SammyGPT — Noah Rozin</title>
+  <meta name="description" content="How SammyGPT works under the hood — language detection, vector retrieval, and serving immigrant families across six Staten Island schools.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="../index.html" class="nav-logo">NR</a>
+    <ul class="nav-links">
+      <li><a href="../index.html#about">About</a></li>
+      <li><a href="../index.html#skills">Skills</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../blog.html">Blog</a></li>
+      <li class="cta-link"><a href="https://github.com/Nosha08" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="../index.html#about">About</a>
+    <a href="../index.html#skills">Skills</a>
+    <a href="../projects.html">Projects</a>
+    <a href="../blog.html">Blog</a>
+    <a href="https://github.com/Nosha08" target="_blank" rel="noopener noreferrer">GitHub</a>
+  </div>
+
+  <main>
+    <div class="post-container">
+
+      <a href="../blog.html" class="post-back">&larr; All Posts</a>
+
+      <header class="post-header">
+        <div class="post-meta">
+          <span class="accent">Apr 2025</span>
+          <span>By Noah Rozin</span>
+          <span>Technical Deep Dive</span>
+        </div>
+        <h1>Building SammyGPT: Language Detection, RAG, and Serving Immigrant Families</h1>
+        <p class="post-desc">
+          Thousands of immigrant families on Staten Island can&rsquo;t easily communicate with
+          their children&rsquo;s schools because of language barriers. Here&rsquo;s how SammyGPT
+          works under the hood to dissolve that barrier.
+        </p>
+      </header>
+
+      <div class="post-body">
+
+        <p>
+          My high school, known for being &ldquo;technical&rdquo;, has a running joke about how bad
+          our website is: awkwardly embedded animations, navigation overlaps, and sheer difficulty
+          finding anything. I learned this the hard way, volunteering at my first open house, when a
+          parent asked about our STEM programs. I pulled out my phone, searching our site frantically
+          as their eager smiles faded into polite frustration.
+        </p>
+
+        <p>
+          That awkwardness stung. Our website was clearly inconvenient, but given school bureaucracy,
+          I knew that redesigning it wasn&rsquo;t an option. However, a former student&rsquo;s project,
+          SammyGPT, offered a starting point. I took ownership of the project with a new goal:
+          transforming it from a prototype into a scalable tool. I retrained its models on verified
+          school data to reduce hallucinations about nonexistent classes, then optimized multilingual
+          processing to serve the 70% of families speaking another language at home.
+        </p>
+
+        <p>
+          After presenting the updated version to our administrators, I recognized a broader pattern:
+          Staten Island had numerous schools with high immigrant populations and, surprisingly, even
+          worse websites. I proposed expanding SammyGPT&rsquo;s reach, turning it from a personal fix
+          into a community resource, now capable of serving families borough-wide. Here&rsquo;s how
+          the backend actually works.
+        </p>
+
+        <h2>The Server: Flask + WebSockets</h2>
+
+        <p>
+          The backend is a Flask app using Socket.IO for real-time, word-by-word streaming &mdash;
+          the same pattern that makes ChatGPT feel responsive. CORS is locked to three known origins
+          so the API can&rsquo;t be hit from arbitrary frontends.
+        </p>
+
+        <pre><code><span class="kw">from</span> flask <span class="kw">import</span> Flask, request, jsonify
+<span class="kw">from</span> flask_socketio <span class="kw">import</span> SocketIO, emit
+<span class="kw">from</span> flask_cors <span class="kw">import</span> CORS
+
+app = <span class="fn">Flask</span>(env.name)
+cors = <span class="fn">CORS</span>(app, origins=[
+    <span class="st">"http://localhost:3000"</span>,
+    <span class="st">"https://sammygpt.netlify.app"</span>,
+    <span class="st">"https://sammy.siths.tech"</span>
+])
+socketio = <span class="fn">SocketIO</span>(app, cors_allowed_origins=[
+    <span class="st">"http://localhost:3000"</span>,
+    <span class="st">"https://sammygpt.netlify.app"</span>,
+    <span class="st">"https://sammy.siths.tech"</span>
+])</code></pre>
+
+        <p>
+          A global semaphore caps how many generations can run in parallel, preventing the server
+          from being overwhelmed when multiple parents are querying at the same time:
+        </p>
+
+        <pre><code>semaphore = threading.<span class="fn">Semaphore</span>(env.max_processes_at_a_time)
+
+<span class="cm"># Inside the generate handler:</span>
+<span class="kw">with</span> semaphore:
+    <span class="cm"># process the prompt</span></code></pre>
+
+        <h2>Language Detection and Translation</h2>
+
+        <p>
+          The core challenge is multilingual input. A parent might send a message in Spanish,
+          Mandarin, or Haitian Creole. The pipeline detects the language, translates the prompt
+          into English for retrieval, generates a response in English, then translates the response
+          back to the parent&rsquo;s language before sending it.
+        </p>
+
+        <pre><code>current_language = <span class="st">"en"</span>
+default_language = <span class="st">"en"</span>
+same_as_default = <span class="nm">False</span>
+
+<span class="kw">if</span> (env.enable_translate):
+    current_language, confidence = Bot.translate_model.<span class="fn">detect_language</span>(prompt)
+
+    <span class="kw">if</span> (current_language != default_language):
+        <span class="cm"># Word-by-word streaming not supported across languages —</span>
+        <span class="cm"># translate the whole prompt first, then generate</span>
+        translated = Bot.translate_model.<span class="fn">translate</span>(
+            prompt, current_language, default_language
+        )
+        prompt = translated.<span class="fn">get</span>(<span class="st">"translated"</span>)
+    <span class="kw">else</span>:
+        same_as_default = <span class="nm">True</span></code></pre>
+
+        <p>
+          When the language matches English, responses stream word-by-word in real time.
+          For other languages, the full response is generated first, then translated in one
+          pass &mdash; because token-by-token streaming doesn&rsquo;t compose cleanly with translation.
+        </p>
+
+        <h2>Intent Classification: When Not to Retrieve</h2>
+
+        <p>
+          Not every question needs school documents. &ldquo;What is photosynthesis?&rdquo; doesn&rsquo;t
+          require pulling from a policy handbook. An intent classifier runs on every prompt before
+          retrieval, and if it identifies a general question, the vector database step is skipped entirely:
+        </p>
+
+        <pre><code><span class="kw">if</span> (Bot.intent_model.<span class="fn">classify</span>(prompt)[0][<span class="st">'label'</span>] == <span class="st">'General Request'</span>):
+    need_reference = <span class="nm">False</span></code></pre>
+
+        <p>
+          This keeps responses fast for general queries and avoids injecting irrelevant school
+          documents into the context window.
+        </p>
+
+        <h2>Vector Retrieval: Grounding Answers in Real Documents</h2>
+
+        <p>
+          Each school&rsquo;s policy documents and handbooks are embedded into a scoped vector store
+          using semantic chunking. When a parent asks a school-specific question, the top matching
+          passages are retrieved and injected into the prompt as context &mdash; preventing hallucination
+          on school-specific facts.
+        </p>
+
+        <pre><code><span class="kw">if</span> (Bot.vectordb):
+    db_result = Bot.vectordb.<span class="fn">query</span>(
+        query_text=prompt,
+        n_results=env.database_fetch_limit
+    )
+
+    <span class="kw">for</span> meta <span class="kw">in</span> db_result.<span class="fn">get</span>(<span class="st">"metadatas"</span>)[0]:
+        references.<span class="fn">append</span>(meta.<span class="fn">get</span>(<span class="st">"link"</span>))
+
+    additional_info += Bot.vectordb.<span class="fn">format_query</span>(db_result)</code></pre>
+
+        <p>
+          Source links are tracked across both the vector database and the browse API so the
+          frontend can show parents exactly where each answer came from.
+        </p>
+
+        <h2>Content Moderation</h2>
+
+        <p>
+          Before any response reaches a parent, it passes through a cleanse function that
+          redacts blacklisted words. The list is loaded from a JSON file on every call so it
+          can be updated without redeploying the server:
+        </p>
+
+        <pre><code><span class="kw">def</span> <span class="fn">cleanse</span>(sentence):
+    <span class="kw">with</span> <span class="fn">open</span>(BLACKLISTED_WORDS_PATH) <span class="kw">as</span> f:
+        words = json.<span class="fn">load</span>(f)
+
+    <span class="kw">for</span> word <span class="kw">in</span> words:
+        sentence = re.<span class="fn">sub</span>(
+            re.<span class="fn">escape</span>(word),
+            <span class="st">"[REDACTED WORD]"</span>,
+            sentence,
+            flags=re.IGNORECASE
+        )
+    <span class="kw">return</span> sentence</code></pre>
+
+        <div class="post-callout">
+          <p>
+            The hardest part wasn&rsquo;t the AI &mdash; it was the infrastructure decisions that
+            make a system reliable for real users: concurrency limits, translation fallbacks,
+            intent routing, and content safety. The pipeline matters more than the model.
+          </p>
+        </div>
+
+        <p>
+          After presenting the updated version to our administrators, I recognized a broader pattern:
+          Staten Island had numerous schools with high immigrant populations and, surprisingly, even
+          worse websites. I proposed expanding SammyGPT&rsquo;s reach, turning it from a personal
+          fix into a community resource, now capable of serving families borough-wide.
+        </p>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>
+      Designed &amp; built by Noah Rozin &nbsp;&middot;&nbsp;
+      <a href="mailto:rozinnoah27@gmail.com">rozinnoah27@gmail.com</a>
+    </p>
+    <div class="footer-links">
+      <a href="https://github.com/Nosha08" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/SammyGPT/SammyGPT-Frontend" target="_blank" rel="noopener">Sammy</a>
+      <a href="https://linkedin.com/in/noah-rozin-4837ab23a" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="../index.html">Home</a>
+      <a href="../blog.html">All Posts</a>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
+
